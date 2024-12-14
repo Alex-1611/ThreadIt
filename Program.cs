@@ -45,6 +45,18 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "categories",
+    pattern: "categories",
+    defaults: new { controller = "Categories", action = "Index"}
+    );
+
+app.MapControllerRoute(
+    name: "categoriesAdd",
+    pattern: "categories/new",
+    defaults: new { controller = "Categories", action = "New" }
+    );
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
