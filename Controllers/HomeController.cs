@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using ThreadIt.Data;
 using ThreadIt.Models;
 
 namespace ThreadIt.Controllers
@@ -7,14 +9,23 @@ namespace ThreadIt.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext db;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext DB)
         {
             _logger = logger;
+            db = DB;
         }
 
         public IActionResult Index()
         {
+            var categories = db.Categories
+                .Select(c => new
+                {
+                    Category = c,
+                    Threads = c.Threads.OrderBy(t => t.CreateTime).Take(3)
+                })
+                .ToList();
+            ViewBag.Categories = categories;
             return View();
         }
 
