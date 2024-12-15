@@ -20,3 +20,20 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.trash-trigger .trash1 {
+    transition: 0.5s all ease-in-out;
+    display: none;
+    text-decoration: none;
+    color: white;
+}
+
+.trash-trigger a {
+    text-decoration: none;
+    color: white;
+}
+
+.trash-trigger:hover .trash1 {
+    transition: 0.5s all ease-in-out;
+    display: inline-block;
+}

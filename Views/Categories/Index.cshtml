@@ -1,0 +1,21 @@
+﻿@model Category
+
+<div>
+	<h1>Toate categoriile</h1>
+
+	<a class="btn btn-check" asp-action="New" asp-controller="Categories">Adauga categorie</a>
+
+	<ul>
+		@foreach(Category category in ViewBag.Categories) {
+			<li class="btn btn-dark trash-trigger">
+				@if(User.IsInRole("Admin")) {
+					<a class="trash1" asp-action="Delete" asp-controller="Categories">
+						<i class="bi bi-trash"></i>
+					</a>
+				}
+
+				<a asp-controller="Categories" asp-action="Show" asp-route-id="@category.Id">@category.Name</a>
+			</li>
+		}
+	</ul>
+</div>

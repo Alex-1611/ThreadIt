@@ -1,0 +1,14 @@
+﻿@model Category
+<h1>Panou <span class="text-danger">administrator</span></h1>
+
+<p>Adauga o noua categorie</p>
+
+<form method="post" asp-controller="Categories" asp-action="New">
+	<div class="form-group">
+		<label asp-for="Name">Nume categorie</label>
+		<input type="text" asp-for="Name" class="form-control"/>
+		<span asp-validation-for="Name" class="text-danger"></span>
+	</div>
+
+	<button type="submit" class="btn btn-dark">Adauga</button>
+</form>
