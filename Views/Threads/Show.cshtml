@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Thread";
+    Thread thread = ViewBag.thread;
+}
+
+<h1>@thread.Title</h1>
+<small>Asked by @thread.User.UserName - @thread.CreateTime.ToString("g")</small>
+<p>@thread.Content</p>
+
+<h2>Comments</h2>
+@if (thread.Comments != null && thread.Comments.Any())
+{
+    <ul>
+        @foreach (var comment in thread.Comments)
+        {
+            <li>
+                <strong>@comment.User.UserName</strong> - @comment.CreateTime.ToString("g")
+                <p>@comment.Content</p>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No comments yet.</p>
+}
