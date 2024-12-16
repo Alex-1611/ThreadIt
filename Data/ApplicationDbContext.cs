@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ThreadIt.Data.Migrations;
 using ThreadIt.Models;
 
 namespace ThreadIt.Data
@@ -15,6 +16,5 @@ namespace ThreadIt.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Models.Thread> Threads { get; set; }
-
     }
 }

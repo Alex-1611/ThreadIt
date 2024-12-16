@@ -1,0 +1,14 @@
+﻿@model AppUser
+@using ThreadIt.Models
+
+@{
+	List<Thread> threads = ViewBag.threads;
+}
+
+<h1>@Model.UserName 's threads</h1>
+
+@foreach(Thread thread in threads) {
+	<div>
+		<a asp-controller="Threads" asp-action="Show" asp-route-id="@thread.Id">@thread.Title</a>
+	</div>
+}

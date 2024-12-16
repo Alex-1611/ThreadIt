@@ -1,0 +1,40 @@
+﻿@model AppUser
+@using Microsoft.AspNetCore.Identity
+
+@{
+	List<IdentityRole> allRoles = ViewBag.allRoles;
+	List<IdentityUserRole<string>> userRoles = ViewBag.userRoles;
+}
+
+<h1>You are now editing @Model.UserName 's profile</h1>
+
+<h3>Username: @Model.UserName</h3>
+<h3>Email: @Model.Email</h3>
+
+<h3>Roles:</h3>
+<form method="post" asp-controller="Users" asp-action="Edit">
+	<input name="id" type="hidden" value="@Model.Id"/>
+	@foreach(IdentityRole role in allRoles) {
+		bool isSet = false;
+		@foreach(IdentityUserRole<string> userRole in userRoles) {
+			if(userRole.RoleId == role.Id) {
+				<input type="radio" id="@role.Id" name="selectedRole" value="@role.Id" checked />
+				
+				isSet = true;
+			}
+		}
+
+		if(!isSet) {
+			<input type="radio" id="@role.Id" name="selectedRole" value="@role.Id"/>
+		}
+
+		<label for="@role.Id">@role.Name</label>
+	}
+
+	<button class="btn btn-dark" type="submit">Save changes</button>
+</form>
+
+<h4>This user posted @Model.Threads.Count threads</h4>
+<a asp-controller="Users" asp-action="UserShow" class="btn btn-dark" asp-route-id="@Model.Id">See posted threads</a>
+
+<h4>This user has @Model.Comments.Count comments</h4>

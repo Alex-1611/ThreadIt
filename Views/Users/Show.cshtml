@@ -1,0 +1,11 @@
+﻿@model AppUser
+
+<h1>You are now viewing @(Model.UserName) 's profile</h1>
+
+<h3>Username: @(Model.UserName)</h3>
+<h3>Email: @(Model.Email)</h3>
+
+<h4>This user posted @(Model.Threads.Count) threads</h4>
+<a asp-controller="Users" asp-action="UserShow" class="btn btn-dark" asp-route-id="@Model.Id">See posted threads</a>
+
+<h4>This user has @(Model.Comments.Count) comments</h4>

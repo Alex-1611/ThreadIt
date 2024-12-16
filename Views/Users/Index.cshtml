@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@{
+	const int USERS_PER_ROW = 3;
+	List<AppUser> users = ViewBag.usersList;
+
+	int nUsers = users.Count;
+	int rows = 1 + nUsers / USERS_PER_ROW;
+
+	UserManager<AppUser> userManager = ViewBag.userManager;
+}
+
+<h1>Users</h1>
+
+<span class="text-success">@TempData["info"]</span>
+
+<div class="container">
+	@for(int i = 0; i < rows; ++i) {
+		List<AppUser> rowUsers = new List<AppUser>();
+		for(int k = 0; k < USERS_PER_ROW; ++k) {
+			int index = i * USERS_PER_ROW + k;
+
+			if (index < users.Count)
+			{
+				rowUsers.Add(users[index]);
+			}
+		}
+
+		<div class="row">
+			@foreach(AppUser user in rowUsers) {
+				<div class="col-sm rounded" style="padding: 20px; margin: 20px; border: 2px solid black;">
+					<div class="bg-dark bg-opacity-50 rounded d-inline-block" style="width: 50px; height: 50px;"></div>
+					@{
+						bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+						if(isAdmin) {
+							<i class="bi bi-award-fill" style="color: #f53838;"></i>
+						}
+					}
+					<br />
+
+					@if (User.IsInRole("Admin"))
+					{
+						<a asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id" style="text-decoration: none; color: black;">
+							<i class="bi bi-pencil-square"></i>
+						</a>
+					}
+					<a asp-controller="Users" asp-action="Show" asp-route-id="@user.Id" style="font-size: 20px;">@user.UserName</a>
+					<span class="d-block">Posted @user.Threads.Count threads</span>
+					<span class="d-block">Asked @user.Comments.Count questions</span>
+				</div>
+			}
+		</div>
+	}
+</div>
