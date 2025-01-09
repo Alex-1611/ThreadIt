@@ -1,0 +1,24 @@
+﻿@model Thread
+
+<h1>New Thread</h1>
+
+<br />
+<form method="post" asp-controller="Threads" asp-action="New">
+	<div class="form-group">
+		<label asp-for="Title">Title</label>
+		<input type="text" asp-for="Title" class="form-control" />
+		<br />
+		<label asp-for="Content">Content</label>
+		<input type="text" asp-for="Content" class="form-control" />
+		<br />
+		<select asp-for="CategoryId">
+			@foreach (Category category in ViewBag.categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+		</select>
+
+	</div>
+
+	<button type="submit" class="btn btn-dark">Adauga</button>
+</form>
