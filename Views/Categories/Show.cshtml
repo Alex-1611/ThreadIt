@@ -1,17 +1,20 @@
 ﻿@model Category
 
+@{
+	var threads = ViewBag.threads;
+}
+
 <div class="card">
 	<div class="card-body">
 		<h2 class="card-title">@Model.Name</h2>
 
-		@if (ViewBag.catThreads == null || ViewBag.catThreads.Count == 0)
+		@if (ViewBag.threads == null || ViewBag.threads.Count == 0)
 		{
 			<p class="text-dark">The category does not contain any threads.</p>
 		} 
 		else 
 		{
-			<ul>
-				@foreach (var thread in ViewBag.catThreads)
+			@* @foreach (var thread in ViewBag.catThreads)
 				{
 					<li>
 						<div>
@@ -21,8 +24,61 @@
 							<p class="text-truncate" style="max-width: 300px">@thread.Content</p>
 						</div>
 					</li>
+				} *@
+
+			int maxThreads = threads.Count;
+			int ci = 0;
+
+			<div class="container">
+				@for(int i = 0; i < ViewBag.pageRows && ci < maxThreads; ++i) {
+					<div class="row">
+						@for(int j = 0;j < ViewBag.perRow && ci < maxThreads; ++j) {
+							<div class="col-sm m-4">
+								@{
+									var currentThr = threads[ci++];
+								}
+
+								@* <a asp-controller="Threads" asp-action="Show" asp-route-id="@currentThr.Id">	 *@
+									<div class="card">
+										<div class="card-body">
+											<h5 class="card-title">@currentThr.Title</h5>
+											<h6 class="card-subtitle">
+												Posted by @currentThr.User.UserName on @currentThr.CreateTime.ToString("g")
+											</h6>
+											<p class="card-text">@currentThr.Content</p>
+										
+											<a class="card-link btn btn-dark" asp-controller="Threads" asp-action="Show" asp-route-id="@currentThr.Id">See thread</a>
+										</div>
+									</div>
+								@* </a> *@
+							</div>
+						}
+					</div>
 				}
-			</ul>
+			</div>
+
+			<nav aria-label="page-navigation align-items-center">
+				<ul class="pagination">
+					<li class="page-item">
+						<a class="page-link" href="@ViewBag.PaginationBaseUrl=1" aria-label="Previous">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+
+					@for (int i = 1; i <= ViewBag.lastPage; i++)
+					{
+						<li class="page-item">
+							<a class="page-link" href="@ViewBag.PaginationBaseUrl=@i">@(i)</a>
+						</li>
+					}
+
+					<li class="page-item">
+						<a class="page-link" href="@ViewBag.PaginationBaseUrl=@(ViewBag.lastPage)" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				</ul>
+			</nav>
 		}
 	</div>
 </div>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ThreadIt.Data;
 using ThreadIt.Models;
 
@@ -15,62 +16,28 @@ namespace ThreadIt.Controllers {
             if (id == null) return RedirectToAction("Index");
             var category = db.Categories.FirstOrDefault(c => c.Id == id);
 
-            var threads = db.Threads.Where(t => t.CategoryId == id).ToList();
-            ViewBag.catThreads = threads;
+            ViewBag.PaginationBaseUrl = "/Categories/Show/" + id + "?page";
+            int threadsPerPage = 6;
+            int threadsPerRow = 2; // < threadsPerPage
 
-//            int _perPage = 3;
+            var rows = Math.Ceiling((float)threadsPerPage/(float)threadsPerRow);
+            ViewBag.pageRows = rows;
+            ViewBag.perRow = threadsPerRow;
 
-//            var articles = db.Articles.Include("Category").Include("User").OrderBy(a => a.Date);
+            var threads = db.Threads.Include("User").Where(t => t.CategoryId == id).OrderBy(t => t.CreateTime);
 
-//            if (TempData.ContainsKey("message")) {
-//                ViewBag.message = TempData["message"].ToString();
-//                ViewBag.Alert = TempData["messageType"];
-//            }
+            int totalThreads = threads.Count();
 
-//            int totalItems = articles.Count();
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+            var offset = 0;
 
+            if(!currentPage.Equals(0)) {
+                offset = (currentPage - 1) * threadsPerPage;
+            }
 
-
-//            Dezvoltarea Aplicatiilor Web – Curs 10
-//https://www.cezarabenegui.com/                                               cezara.benegui@fmi.unibuc.ro  
-//            11
-//            // Se preia pagina curenta din View-ul asociat 
-//            // Numarul paginii este valoarea parametrului page 
-//din ruta
-//            // /Articles/Index?page=valoare 
-
-//            var currentPage =
-//Convert.ToInt32(HttpContext.Request.Query["page"]);
-
-//            // Pentru prima pagina offsetul o sa fie zero 
-//            // Pentru pagina 2 o sa fie 3  
-//            // Asadar offsetul este egal cu numarul de articole 
-//            care au fost deja afisate pe paginile anterioare
-//            var offset = 0;
-
-//            // Se calculeaza offsetul in functie de numarul 
-//            paginii la care suntem
-//            if (!currentPage.Equals(0)) {
-//                offset = (currentPage - 1) * _perPage;
-//            }
-
-//            // Se preiau articolele corespunzatoare pentru 
-//            fiecare pagina la care ne aflam
-//            // in functie de offset 
-//            var paginatedArticles =
-//articles.Skip(offset).Take(_perPage);
-
-
-//            // Preluam numarul ultimei pagini 
-
-//            ViewBag.lastPage = Math.Ceiling((float)totalItems /
-//(float)_perPage);
-
-//            // Trimitem articolele cu ajutorul unui ViewBag 
-//            catre View-ul corespunzator
-//            ViewBag.Articles = paginatedArticles;
-
-//            return View();
+            var paginatedThreads = threads.Skip(offset).Take(threadsPerPage);
+            ViewBag.lastPage = Math.Ceiling((float)totalThreads / (float)threadsPerPage);
+            ViewBag.threads = paginatedThreads.ToList();
 
             return View(category);
         }
