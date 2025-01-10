@@ -2,6 +2,21 @@
     ViewData["Title"] = "Home Page";
 }
 @model Thread
+
+<div class="row mb-2">
+    <div class="col">
+        <h2>Welcome to threadIt!</h2>
+    </div>
+    <div class="col">
+        <div class="search-container">
+            <button class="search-button" onclick="toggleSearchInput()">
+                <i class="bi bi-search"></i>
+            </button>
+            <input type="text" class="search-input" placeholder="Search..." id="searchInput">
+        </div>
+    </div>
+</div>
+
 <div class="row mb-4">
     @foreach (var category in ViewBag.Categories)
     {
