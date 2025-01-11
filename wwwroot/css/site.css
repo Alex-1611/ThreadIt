@@ -10,6 +10,7 @@
 body {
     padding-left: 15%;
     margin-top: 10px;
+    font-family: Inter;
 }
 
 .search-container {
@@ -39,11 +40,13 @@ body {
 }
 
 .navbar-nav li {
-    margin: 8px;
+    box-shadow: 0px 0px 0px 0px #258cfb;
+    transition: box-shadow 0.2s linear;
+    margin: 0.5em; 
 }
 
 .navbar-nav li:hover {
-    border-bottom: 2px solid #007bff;
+    box-shadow: 0px 3px 0px -1px #007bff;
 }
 
 .w-15 {
@@ -91,4 +94,66 @@ html {
 .trash-trigger:hover .trash1 {
     transition: 0.5s all ease-in-out;
     display: inline-block;
+}
+
+
+/*FONTURI*/
+.lato-thin {
+    font-family: "Lato", serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.lato-light {
+    font-family: "Lato", serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.lato-regular {
+    font-family: "Lato", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.lato-bold {
+    font-family: "Lato", serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.lato-black {
+    font-family: "Lato", serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.lato-thin-italic {
+    font-family: "Lato", serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.lato-light-italic {
+    font-family: "Lato", serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.lato-regular-italic {
+    font-family: "Lato", serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.lato-bold-italic {
+    font-family: "Lato", serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.lato-black-italic {
+    font-family: "Lato", serif;
+    font-weight: 900;
+    font-style: italic;
 }
