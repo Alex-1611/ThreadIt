@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Thread";
     Thread thread = ViewBag.thread;
+    List<Comment> comments = ViewBag.comments;
 }
 
 <h1>@thread.Title</h1>
@@ -8,14 +9,14 @@
 <p>@thread.Content</p>
 
 <h2>Comments</h2>
-@if (thread.Comments != null && thread.Comments.Any())
+@if (comments != null && comments.Any())
 {
     <ul>
-        @foreach (var comment in thread.Comments)
+        @foreach (var com in comments)
         {
-            <li>
-                <strong>@comment.User.UserName</strong> - @comment.CreateTime.ToString("g")
-                <p>@comment.Content</p>
+            <li style="padding-left:@(com.Level*20)px">
+                <strong>@com.User.UserName</strong> - @com.CreateTime.ToString("g")
+                <p>@com.Content</p>
             </li>
         }
     </ul>

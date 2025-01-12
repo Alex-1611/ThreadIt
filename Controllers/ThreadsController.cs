@@ -18,6 +18,7 @@ namespace ThreadIt.Controllers
             this.userManager = userManager;
             db = DB;
         }
+
         //private List<Comment> GetComments(int id)
         //{
         //    var sql =
@@ -33,8 +34,33 @@ namespace ThreadIt.Controllers
         //        "SELECT Id, Content, Level, IsDeleted, CreateTime, ParentId, ThreadId, UserId " +
         //        "FROM nest_comm " +
         //        "ORDER BY prec";
-
         //}
+
+        private List<Comment> GetComments(int id)
+        {
+            var comments = db.Comments
+                .Include(c => c.User)
+                .Where(c => c.ThreadId == id && c.Level == 0)
+                .OrderByDescending(c => db.Comments.Count(r => r.ParentId == c.Id))
+                .ThenBy(c => c.CreateTime)
+                .ToList();
+
+            List<Comment> result = new List<Comment>();
+
+            void OrderComments(Comment com)
+            {
+                result.Add(com);
+                var replies = db.Comments.Include(c => c.User).Where(c => c.ParentId == com.Id).OrderBy(r => r.CreateTime);
+                if (replies != null)
+                    foreach (var rep in replies)
+                        OrderComments(rep);
+            }
+
+            foreach (var com in comments) 
+                OrderComments(com);
+
+            return result;
+        }
 
         public IActionResult Index()
         {
@@ -43,16 +69,22 @@ namespace ThreadIt.Controllers
 
         public IActionResult Show(int id)
         {
-            var thr = db.Threads.Where(t => t.Id == id);
-            var comments = db.Comments.Where(t => t.ThreadId == id).ToList();
+            var thr = db.Threads.Include(t => t.User).FirstOrDefault(t => t.Id == id);
+            var comments = GetComments(id);
             ViewBag.thread = thr;
+            ViewBag.comments = comments;
             return View();
         }
 
-        [Authorize(Roles = "User, Admin") ]
         [HttpGet]
         public IActionResult New()
         {
+            if(!(User.IsInRole("Admin") || User.IsInRole("User")))
+            {
+                TempData["REDIRECTINFO"] = "Trebuie sa fii logat pentru a posta un Thread!";
+                TempData["REDIRECT"] = "/Threads/New";
+                return Redirect("/Identity/Account/Login");
+            }
             var categories = db.Categories.ToList();
             ViewBag.categories = categories;
             return View();
