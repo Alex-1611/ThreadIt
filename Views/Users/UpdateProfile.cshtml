@@ -1,2 +1,19 @@
 ﻿@model AppUser
-<p> @Model.UserName</p>
+
+@if(TempData["Editare"] != null) {
+	<span class="alert alert-info">@TempData["Editare"]</span>
+}
+
+<form method="post" asp-controller="Users" asp-action="UpdateProfile">
+	<div class="form-group">
+		<label asp-for="UserName">Username</label>
+		<input asp-for="UserName" class="form-control" type="text" placeholder="@Model.UserName"/>
+	</div>
+
+	<div class="form-group">
+		<label asp-for="Descriere">About me</label>
+		<textarea placeholder="Describe yourself..." asp-for="Descriere" class="form-control">@Model.Descriere</textarea>
+	</div>
+
+	<button class="btn btn-primary" type="submit">Save Changes</button>
+</form>

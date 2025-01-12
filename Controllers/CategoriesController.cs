@@ -75,8 +75,10 @@ namespace ThreadIt.Controllers {
             var category = db.Categories.FirstOrDefault(c => c.Id == id);
             if(category == null) return RedirectToAction("Index");
 
-            //db.Categories.Remove(category);
-            //db.SaveChanges();
+            db.Categories.Remove(category);
+            db.SaveChanges();
+
+            TempData["CategoryDelete"] = "Category deleted successfully.";
             return RedirectToAction("Index");
         }
     }

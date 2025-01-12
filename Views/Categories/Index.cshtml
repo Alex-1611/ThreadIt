@@ -3,18 +3,41 @@
 <div>
 	<h1>All Categories</h1>
 
-	<a class="btn btn-check" asp-action="New" asp-controller="Categories">Add Category</a>
+	@if(TempData["CategoryDelete"] != null) {
+		<p class="alert alert-success">@TempData["CategoryDelete"]</p>
+	}
 
-	<ul>
+	@if (User.IsInRole("Admin"))
+	{
+		<a class="btn btn-primary" asp-action="New" asp-controller="Categories">
+			<i class="bi bi-plus-square"></i>
+		</a>
+	}
+
+	<ul class="d-flex">
 		@foreach(Category category in ViewBag.Categories) {
-			<li class="btn btn-dark trash-trigger m-5">
+			<li class="btn trash-trigger d-flex flex-row align-items-center">
 				@if(User.IsInRole("Admin")) {
-					<a class="trash1" asp-action="Delete" asp-controller="Categories">
-						<i class="bi bi-trash"></i>
-					</a>
+					<form method="post" asp-action="Delete" asp-controller="Categories" asp-route-id="@category.Id">
+						<input type="hidden" name="_method" value="DELETE" />
+
+						<button class="btn btn-danger trash1" type="submit">
+							<i class="bi bi-trash"></i>
+						</button>
+					</form>
 				}
 
-				<a asp-controller="Categories" asp-action="Show" asp-route-id="@category.Id">@category.Name</a>
+				<a class="card-link text-decoration-none m-2" asp-controller="Categories" asp-action="Show" asp-route-id="@category.Id">
+					<div class="card" style="width:18rem;color: black;">
+						<div class="card-body text-start">
+							<h4 class="card-title">
+								@category.Name
+							</h4>
+
+							<p class="card-text">@category.Description</p>
+						</div>
+					</div>
+				</a>
 			</li>
 		}
 	</ul>

@@ -115,8 +115,35 @@ namespace ThreadIt.Controllers {
                 return Redirect("/Identity/Account/Login");
             }
             var id = _userManager.GetUserId(User);
-            AppUser? user = db.Users.Find(id);
+            AppUser? user = db.Users.FirstOrDefault(u => u.Id == id);
+
             return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile(AppUser? edited) {
+            // Ignore subs because it can be null
+            ModelState.Remove("Subs");
+
+            if(ModelState.IsValid) {
+                var user = db.Users.FirstOrDefault(u => u.Id == _userManager.GetUserId(User));
+                var checkUsername = db.Users.FirstOrDefault(u => u.UserName == edited.UserName);
+                
+                if (checkUsername == null) {
+                    user.UserName = edited.UserName;
+                    user.Descriere = edited.Descriere;
+
+                    db.SaveChanges();
+
+                    TempData["Editare"] = "User edited successfully.";
+                    return Redirect("/Users/Show/" + _userManager.GetUserId(User));
+                }
+            
+                TempData["Editare"] = "UserName is already taken.";
+            }
+
+            TempData["Editare"] = "Could not update user.";
+            return View(edited);
         }
     }
 }
