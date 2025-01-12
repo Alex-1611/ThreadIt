@@ -115,6 +115,8 @@ namespace ThreadIt.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    if (TempData["REDIRECT"] != null)
+                        return Redirect(TempData["REDIRECT"].ToString());
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

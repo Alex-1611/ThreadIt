@@ -6,6 +6,10 @@ namespace ThreadIt.Models
 {
     public class AppUser : IdentityUser
     {
+        public String? Descriere { get; set; }
+
+        public ICollection<Subscribe> Subs{ get; set; }
+
         public virtual ICollection<Thread>? Threads { get; set; }
 
         public virtual ICollection<Comment>? Comments { get; set; }

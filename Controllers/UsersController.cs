@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadIt.Data;
-using ThreadIt.Data.Migrations;
 using ThreadIt.Models;
 
 namespace ThreadIt.Controllers {
@@ -103,6 +102,21 @@ namespace ThreadIt.Controllers {
             TempData["info"] = "Changed role of " + user.UserName + " successfully.";
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult UpdateProfile()
+        {
+            if (!(User.IsInRole("Admin") || User.IsInRole("User") ))
+            {
+                //redirect to login page
+                TempData["REDIRECT"] = "/Users/UpdateProfile";
+                TempData["REDIRECTINFO"] = "You need to be logged in to modify your profile!";
+                return Redirect("/Identity/Account/Login");
+            }
+            var id = _userManager.GetUserId(User);
+            AppUser? user = db.Users.Find(id);
+            return View(user);
         }
     }
 }
