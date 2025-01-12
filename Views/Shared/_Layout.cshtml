@@ -1,9 +1,27 @@
-﻿<!DOCTYPE html>
+﻿@functions {
+    public bool IsActive(string controller, string action)
+    {
+        if (ViewContext.RouteData.Values["controller"] == null || ViewContext.RouteData.Values["action"] == null) return false;
+
+        var currentController = ViewContext.RouteData.Values["controller"].ToString();
+        var currentAction = ViewContext.RouteData.Values["action"].ToString();
+
+        return string.Equals(controller, currentController, StringComparison.OrdinalIgnoreCase) &&
+               string.Equals(action, currentAction, StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ThreadIt</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ThreadIt.styles.css" asp-append-version="true" />
@@ -19,26 +37,26 @@
 
             <div>
                 <ul class="nav navbar-nav flex-column mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                    <li class="nav-item ">
+                        <a class="nav-link @(IsActive("Home", "Index") ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">
                             <i class="bi bi-house"></i>
                             Home
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Categories" asp-action="Index">
+                    <li class="nav-item ">
+                        <a class="nav-link @(IsActive("Categories", "Index") ? "active" : "")" asp-area="" asp-controller="Categories" asp-action="Index">
                             <i class="bi bi-tags"></i>
                             Categories
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Users" asp-action="Index">
+                    <li class="nav-item ">
+                        <a class="nav-link @(IsActive("Users", "Index") ? "active" : "")" asp-area="" asp-controller="Users" asp-action="Index">
                             <i class="bi bi-people"></i>
                             Users
                         </a>
                     </li>
                     <li class="nav-item mb-xl-5">
-                        <a class="nav-link" asp-controller="Threads" asp-action="New">
+                        <a class="nav-link @(IsActive("Threads", "New") ? "active" : "")" asp-controller="Threads" asp-action="New">
                             <i class="bi bi-file-plus"></i>
                             Post Thread
                         </a>
