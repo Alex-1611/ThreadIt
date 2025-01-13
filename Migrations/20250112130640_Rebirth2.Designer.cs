@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ThreadIt.Data;
 
@@ -11,9 +12,11 @@ using ThreadIt.Data;
 namespace ThreadIt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250112130640_Rebirth2")]
+    partial class Rebirth2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,10 +238,6 @@ namespace ThreadIt.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -446,8 +445,7 @@ namespace ThreadIt.Migrations
                 {
                     b.HasOne("ThreadIt.Models.Category", "Category")
                         .WithMany("Threads")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("ThreadIt.Models.AppUser", "User")
                         .WithMany("Threads")

@@ -7,9 +7,11 @@
 	<div class="form-group">
 		<label asp-for="Title">Title</label>
 		<input type="text" asp-for="Title" class="form-control" />
+		<span asp-validation-for="Title"></span>
 		<br />
 		<label asp-for="Content">Content</label>
 		<input type="text" asp-for="Content" class="form-control" />
+		<span asp-validation-for="Content"></span>
 		<br />
 		<select asp-for="CategoryId">
 			@foreach (Category category in ViewBag.categories)

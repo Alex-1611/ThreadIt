@@ -1,0 +1,42 @@
+﻿@model ThreadIt.Models.Thread
+
+@{
+    ViewData["Title"] = "Thread";
+    Thread thread = ViewBag.thread;
+    List<Comment> comments = ViewBag.comments;
+    var uid = ViewBag.userId;
+}
+
+<form method="post" asp-controller="Threads" asp-action="Edit" asp-route-id="@thread.Id">
+    <div class="d-flex flex-row align-items-center">
+        <input asp-for="Title" class="form-control h1" value="@thread.Title" />
+
+        @if (@thread.UserId == uid) {
+            <a class="btn btn-primary" asp-action="Show" asp-controller="Threads" asp-route-id="@thread.Id">
+                <i class="bi bi-x-square"></i>
+            </a>
+        }
+    </div>
+    <small>Asked by @thread.User.UserName - @thread.CreateTime.ToString("g")</small>
+    <textarea asp-for="Content" class="form-control">@thread.Content</textarea>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+<h2>Comments</h2>
+@if (comments != null && comments.Any())
+{
+        <ul>
+        @foreach (var com in comments)
+        {
+                    <li style="padding-left:@(com.Level*20)px">
+                        <strong>@com.User.UserName</strong> - @com.CreateTime.ToString("g")
+                        <p>@com.Content</p>
+                    </li>
+        }
+        </ul>
+}
+else
+{
+        <p>No comments yet.</p>
+}

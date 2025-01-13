@@ -88,7 +88,7 @@ html {
 
 .trash-trigger a {
     text-decoration: none;
-    color: white;
+    /*color: white;*/
 }
 
 .trash-trigger:hover .trash1 {

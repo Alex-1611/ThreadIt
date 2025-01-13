@@ -1,21 +1,96 @@
 ﻿@model Category
 
 <div>
-	<h1>All Categories</h1>
+	<div class="d-flex justify-content-between align-items-center">
+		<h1>All Categories</h1>
 
-	<a class="btn btn-check" asp-action="New" asp-controller="Categories">Add Category</a>
-
-	<ul>
-		@foreach(Category category in ViewBag.Categories) {
-			<li class="btn btn-dark trash-trigger m-5">
-				@if(User.IsInRole("Admin")) {
-					<a class="trash1" asp-action="Delete" asp-controller="Categories">
-						<i class="bi bi-trash"></i>
-					</a>
-				}
-
-				<a asp-controller="Categories" asp-action="Show" asp-route-id="@category.Id">@category.Name</a>
-			</li>
+		@if (User.IsInRole("Admin"))
+		{
+			<a class="btn btn-primary" asp-action="New" asp-controller="Categories">
+				<i class="bi bi-plus-square"></i> New Category
+			</a>
 		}
-	</ul>
+	</div>
+
+	@if(TempData["CategoryDelete"] != null) {
+		<p class="alert alert-success">@TempData["CategoryDelete"]</p>
+	}
+	@if(TempData["CategoryFollow"] != null) {
+		<p class="alert alert-success">@TempData["CategoryFollow"]</p>
+	}
+
+	@{
+		var categories = ViewBag.Categories;
+		int nCategories = ViewBag.Categories.Count;
+		int perRow = 3;
+
+		int nRows = 1 + nCategories / perRow;
+		int catIndex = 0;
+	}
+
+	<div class="categories-show">
+		@for (int i = 0; i < nRows; ++i) {
+			<div class="row">
+				@for (int j = 0; j < perRow; ++j) {
+					if (catIndex < nCategories)
+					{
+						Category currentCat = categories[catIndex++];
+
+						<div class="col-md">
+							<div class="card m-3" style="height: 12rem;">
+								@if (User.IsInRole("Admin"))
+								{
+									<form method="post" asp-action="Delete" asp-controller="Categories" asp-route-id="@currentCat.Id" class="position-absolute" style="top:10px; right: 10px;">
+										<input type="hidden" name="_method" value="DELETE" />
+
+										<button class="btn btn-danger trash1" style="font-size: 14px" type="submit">
+											<i class="bi bi-trash"></i>
+										</button>
+									</form>
+								}
+
+								<div class="card-body">
+									<a asp-controller="Categories" asp-action="Show" asp-route-id="@currentCat.Id" class="bg-light border text-black p-2 text-decoration-none rounded-pill" style="font-weight:bold !important;">
+										@currentCat.Name
+									</a>
+									@if (User.Identity.IsAuthenticated)
+									{
+										<form class="d-inline-block" method="post" asp-controller="Users" asp-action="SubscribeToggle" asp-route-userId="@ViewBag.usermanager.GetUserId(User)" asp-route-categoryId="@currentCat.Id" asp-route-actionName="Index">
+											<button type="submit" class="m-2 btn btn-success rounded-pill">
+												@{
+													bool isFollowing = false;
+													foreach(var cat in ViewBag.followedCats){
+														if(cat == @currentCat.Id) {
+															isFollowing = true;
+														}
+													}
+												}
+
+												@if (!isFollowing)
+												{
+													<i class="bi bi-plus"></i>
+												}
+												else
+												{
+													<i class="bi bi-dash"></i>
+												}
+											</button>
+										</form>
+									}
+
+									<p class="card-text mt-3" style="text-overflow: ellipsis; overflow: hidden; max-width: 100ch; white-space: normal; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+										@currentCat.Description
+									</p>
+								</div>
+
+								<span class="position-absolute text-secondary" style="font-size: 12px; bottom: 8px; left: 8px;">@currentCat.Threads.Count posted threads</span>
+							</div>
+						</div>
+					} else {
+						<div class="col-md"></div>
+					}
+				}
+			</div>
+		}
+	</div>
 </div>

@@ -131,10 +131,13 @@ namespace ThreadIt.Controllers
 
         public IActionResult Show(int id)
         {
-            var thr = db.Threads.Include(t => t.User).FirstOrDefault(t => t.Id == id);
+            var thr = db.Threads.Include("User").FirstOrDefault(t => t.Id == id);
             var comments = GetComments(id);
+
             ViewBag.thread = thr;
             ViewBag.comments = comments;
+            ViewBag.userId = userManager.GetUserId(User);
+            
             return View();
         }
 
@@ -159,14 +162,46 @@ namespace ThreadIt.Controllers
             //make thr.UserId get the id of the current user
             thr.UserId = userManager.GetUserId(User);
             thr.CreateTime = DateTime.Now;
+
             if (ModelState.IsValid)
             {
                 db.Threads.Add(thr);
                 db.SaveChanges();
                 return RedirectToAction("Show", new { id = thr.Id });
             }
+
+            var categories = db.Categories.ToList();
+            ViewBag.categories = categories;
+
+            return View();
+        }
+
+        public IActionResult Edit(int id) {
+            var thr = db.Threads.Include("User").FirstOrDefault(t => t.Id == id);
+            var uid = userManager.GetUserId(User);
+
+            if(uid == null || id == null) { return Redirect("/Threads/Show/" + id); }
+            var comments = GetComments(id);
+
+            ViewBag.userId = uid;
+            ViewBag.thread = thr;
+            ViewBag.comments = comments;
+
             return View(thr);
         }
 
+        [HttpPost]
+        public IActionResult Edit(Models.Thread? updatedThread) {
+            if (updatedThread == null) return Redirect("/categories");
+
+            var initialThread = db.Threads.FirstOrDefault(t => t.Id == updatedThread.Id);
+
+            initialThread.Title = updatedThread.Title;
+            initialThread.Content = updatedThread.Content;
+
+            db.SaveChanges();
+
+            return Redirect("/Threads/Show/" + initialThread.Id);
+        }
     }
 }

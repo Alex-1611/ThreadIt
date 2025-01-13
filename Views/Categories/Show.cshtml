@@ -2,11 +2,41 @@
 
 @{
 	var threads = ViewBag.threads;
+	var usermanager = ViewBag.userManager;
 }
 
 <div class="card">
 	<div class="card-body">
-		<h2 class="card-title">@Model.Name</h2>
+		<div class="d-flex">
+			<h2 class="card-title">@Model.Name</h2>
+		
+			@if (User.Identity.IsAuthenticated)
+			{
+				<form class="d-inline-block" method="post" asp-controller="Users" asp-action="SubscribeToggle" asp-route-userId="@usermanager.GetUserId(User)" asp-route-categoryId="@Model.Id" asp-route-actionName="Show">
+					<button type="submit" class="m-2 btn btn-success rounded-pill">
+						@{
+							bool isFollowing = false;
+							foreach (var cat in ViewBag.followedCats)
+							{
+								if (cat == @Model.Id)
+								{
+									isFollowing = true;
+								}
+							}
+						}
+
+						@if (!isFollowing)
+						{
+							<i class="bi bi-plus"></i>
+						}
+						else
+						{
+							<i class="bi bi-dash"></i>
+						}
+					</button>
+				</form>
+			}
+		</div>
 
 		@if (ViewBag.threads == null || ViewBag.threads.Count == 0)
 		{
@@ -14,17 +44,6 @@
 		} 
 		else 
 		{
-			@* @foreach (var thread in ViewBag.catThreads)
-				{
-					<li>
-						<div>
-							<a class="text-decoration-none" asp-action="Show" asp-controller="Threads" asp-route-id="@thread.Id">
-								@thread.Title
-							</a>
-							<p class="text-truncate" style="max-width: 300px">@thread.Content</p>
-						</div>
-					</li>
-				} *@
 
 			int maxThreads = threads.Count;
 			int ci = 0;
