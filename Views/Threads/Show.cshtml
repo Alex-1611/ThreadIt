@@ -2,9 +2,16 @@
     ViewData["Title"] = "Thread";
     Thread thread = ViewBag.thread;
     List<Comment> comments = ViewBag.comments;
+    var uid = ViewBag.userId;
 }
 
-<h1>@thread.Title</h1>
+<div class="d-flex flex-row align-items-center">
+    <h1>@thread.Title</h1>
+    @if (@thread.UserId == uid)
+    {
+        <a class="btn btn-primary" asp-action="Edit" asp-controller="Threads" asp-route-id="@thread.Id"><i class="bi bi-pencil-square"></i></a>
+    }
+</div>
 <small>Asked by @thread.User.UserName - @thread.CreateTime.ToString("g")</small>
 <p>@thread.Content</p>
 
