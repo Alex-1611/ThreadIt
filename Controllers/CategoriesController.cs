@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadIt.Data;
@@ -7,14 +8,20 @@ using ThreadIt.Models;
 namespace ThreadIt.Controllers {
     public class CategoriesController : Controller {
         private readonly ApplicationDbContext db;
+        private readonly UserManager<AppUser> _userManager;
 
-        public CategoriesController(ApplicationDbContext context) {
+        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager) {
             db = context;
+            _userManager = userManager;
         }
 
         public IActionResult Show(int? id) {
             if (id == null) return RedirectToAction("Index");
             var category = db.Categories.FirstOrDefault(c => c.Id == id);
+
+            ViewBag.usermanager = _userManager;
+            var followedCats = db.Subscribes.Where(s => s.UserId == _userManager.GetUserId(User)).Select(s => s.CategoryId).ToList();
+            ViewBag.followedCats = followedCats;
 
             ViewBag.PaginationBaseUrl = "/Categories/Show/" + id + "?page";
             int threadsPerPage = 6;
@@ -43,8 +50,12 @@ namespace ThreadIt.Controllers {
         }
 
         public IActionResult Index() {
-            var categories = db.Categories.ToList();
+            var categories = db.Categories.Include("Threads").ToList();
             ViewBag.Categories = categories;
+            ViewBag.usermanager = _userManager;
+
+            var followedCats = db.Subscribes.Where(s => s.UserId == _userManager.GetUserId(User)).Select(s => s.CategoryId).ToList();
+            ViewBag.followedCats = followedCats;
 
             return View();
         }

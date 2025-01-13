@@ -48,7 +48,8 @@ namespace ThreadIt.Data
             modelBuilder.Entity<Models.Thread>()
                 .HasOne<Category>(e => e.Category)
                 .WithMany(e => e.Threads)
-                .HasForeignKey(e => e.CategoryId);
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Models.Thread>()
                 .HasOne<AppUser>(e => e.User)

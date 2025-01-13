@@ -26,6 +26,35 @@ namespace ThreadIt.Controllers
                 })
                 .ToList();
             ViewBag.Categories = categories;
+
+            // Motor cautare
+            var search = "";
+            if (Convert.ToString(HttpContext.Request.Query["search"]) != null) {
+                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim();
+
+                // Cautarea propriuzisa
+                List<int> threadIds = db.Threads.Where(
+                            t => t.Title.Contains(search)
+                                || t.Content.Contains(search)
+                        ).Select(t => t.Id).ToList();
+
+                List<int> commentIds = db.Comments.Where(
+                            c => !c.IsDeleted 
+                            && c.Content.Contains(search)
+                        ).Select(c => c.ThreadId).ToList();
+
+                List<int> allIds = threadIds.Union(commentIds).ToList();
+
+                var threads = db.Threads
+                    .Where(t => allIds.Contains(t.Id))
+                    .Include("Comments")
+                    .Include("User")
+                    .OrderBy(t => t.CreateTime);
+
+                ViewBag.searchThreads = threads;
+                ViewBag.searchString = search;
+            }
+
             return View();
         }
 

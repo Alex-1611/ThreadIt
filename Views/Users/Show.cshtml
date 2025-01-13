@@ -1,17 +1,78 @@
 ﻿@model AppUser
 
-<div class="d-flex flex-row align-items-center">
-	<h1 class="m-2">You are now viewing @(Model.UserName)'s profile</h1>
-	
-	<a asp-controller="Users" asp-action="UpdateProfile" class="btn btn-primary">
-		<i class="bi bi-pencil-square"></i> Edit
-	</a>
+<div class="card">
+	<div class="d-flex flex-row justify-content-between align-items-center">
+		<h1 class="m-2">
+			@(Model.UserName)'s profile 	
+		</h1>
+
+		@if (Model.Id == ViewBag.userManager.GetUserId(User))
+		{
+			<a asp-controller="Users" asp-action="UpdateProfile" class="btn btn-primary m-2" style>
+				<i class="bi bi-pencil-square"></i> Edit
+			</a>
+		}
+	</div>
+	<p class="m-2 bg-light rounded-2 p-1">Posted @(Model.Threads.Count) threads</p>
+
+	<p class="h3 m-3 text-center">Recent activity</p>
+	<div class="card-body d-flex flex-row justify-content-between">
+		@if (Model.Threads.Count > 0)
+		{
+			
+			<div class="card" style="border:none;">
+				<div class="card-title h4 p-2">Asked</div>
+				@if (Model.Threads.Count > 0)
+				{
+					<div class="card-body">
+						@foreach (ThreadIt.Models.Thread thr in Model.Threads)
+						{
+							<div class="card m-3" style="max-width: 400px; height: 12rem;">
+								<div class="card-body">
+									<a asp-controller="Categories" asp-action="Show" asp-route-id="@thr.Id" class="bg-light border text-black p-2 text-decoration-none rounded-pill" style="font-weight:bold !important;">
+										@thr.Title
+									</a>
+
+									<p class="card-text mt-3" style="text-overflow: ellipsis; overflow: hidden; max-width: 100ch; white-space: normal; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+										@thr.Content
+									</p>
+								</div>
+
+								<a class="card-link btn btn-outline-dark p-2" asp-controller="Threads" asp-action="Show" asp-route-id="@thr.Id">
+									See Thread
+								</a>
+							</div>
+						}
+					</div>
+				}
+				else
+				{
+					<p class="card-title m-2 alert alert-danger p-2">No threads yet</p>
+				}
+			</div>
+
+			<div class="card" style="border:none;">
+				<div class="card-title h4 p-2">Answered</div>
+				@if (Model.Comments.Count > 0)
+				{
+					<div class="card-body">
+						@foreach (Comment comm in Model.Comments)
+						{
+							<a class="btn btn-outline-dark p-2" asp-controller="Threads" asp-action="Show" asp-route-id="@comm.ThreadId">
+								@comm.Thread.Title
+							</a>
+						}
+					</div>
+				}
+				else
+				{
+					<p class="card-title alert alert-danger p-2 m-2">No Comments yet</p>
+				}
+			</div>
+		}
+		else
+		{
+			<p class="alert alert-info p-2">This user hasn't posted yet.</p>
+		}
+	</div>
 </div>
-
-<h4>Username: @(Model.UserName)</h4>
-<h4>Email: @(Model.Email)</h4>
-
-<h5>This user posted @(Model.Threads.Count) threads</h5>
-<a asp-controller="Users" asp-action="UserShow" class="btn btn-dark" asp-route-id="@Model.Id">
-	See posted threads
-</a>

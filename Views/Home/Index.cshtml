@@ -8,35 +8,53 @@
         <h2>Welcome to threadIt!</h2>
     </div>
     <div class="col">
-        <div class="search-container">
-            <button class="search-button" onclick="toggleSearchInput()">
-                <i class="bi bi-search"></i>
-            </button>
-            <input type="text" class="search-input" placeholder="Search..." id="searchInput">
-        </div>
+        <form method="GET">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Search something..." name="search" value="@ViewBag.searchString" autocomplete="off"/>
+                <button type="submit" class="btn btn-outline-success">Search</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<div class="row mb-4">
-    @foreach (var category in ViewBag.Categories)
-    {
-        <div class="col-6 row-style">
-            <div class="card">
-                <div class="card-title p-3 text-center bg-dark text-white">
-                    <h4>@Html.Raw(category.Category.Name)</h4>
-                </div>
-                <div class="card-body">
-                    @foreach (var thread in category.Threads)
-                    {
-                        <div>
-                            <a asp-controller="Threads" asp-action="Show" asp-route-id="@thread.Id" >@thread.Title</a>
-                        </div>
-                    }
-                    <div class="mt-3">
-                        <a asp-controller = "Categories" asp-action = "Show" asp-route-id = "@category.Category.Id" class="btn btn-primary">See All Threads</a>
+@if(ViewBag.searchThreads != null) {
+    var threads = ViewBag.searchThreads;
+
+    <div class="row mb-4">
+        @foreach(ThreadIt.Models.Thread thr in threads) {
+            <div class="col-6 row-style">
+                <div class="card m-2">
+                    <h3 class="card-title m-2">@thr.Title</h3>
+                    <div class="card-body m-2"> 
+                        <p class="card-subtitle">@thr.Content</p>
+                        <a class="card-link btn btn-primary" asp-action="Show" asp-controller="Threads" asp-route-id="@thr.Id">See Thread</a>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+} else {
+    <div class="row mb-4">
+        @foreach (var category in ViewBag.Categories)
+        {
+            <div class="col-6 row-style">
+                <div class="card">
+                    <div class="card-title p-3 text-center bg-dark text-white">
+                        <h4>@Html.Raw(category.Category.Name)</h4>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var thread in category.Threads)
+                        {
+                            <div>
+                                <a asp-controller="Threads" asp-action="Show" asp-route-id="@thread.Id">@thread.Title</a>
+                            </div>
+                        }
+                        <div class="mt-3">
+                            <a asp-controller="Categories" asp-action="Show" asp-route-id="@category.Category.Id" class="btn btn-primary">See All Threads</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

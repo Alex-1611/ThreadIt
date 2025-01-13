@@ -34,9 +34,11 @@ namespace ThreadIt.Controllers {
         public IActionResult Show(string? id) {
             AppUser requestedUser = db.AppUsers
                 .Include("Threads")
-                .Include("Comments")
+                .Include("Comments.Thread")
                 .Where(u => u.Id == id || u.UserName == id)
                 .FirstOrDefault();
+
+            ViewBag.userManager = _userManager;
 
             if (requestedUser != null) {
                 return View(requestedUser);
@@ -131,6 +133,7 @@ namespace ThreadIt.Controllers {
                 
                 if (checkUsername == null) {
                     user.UserName = edited.UserName;
+                    user.NormalizedUserName = edited.UserName.ToUpper();
                     user.Descriere = edited.Descriere;
 
                     db.SaveChanges();
@@ -144,6 +147,34 @@ namespace ThreadIt.Controllers {
 
             TempData["Editare"] = "Could not update user.";
             return View(edited);
+        }
+
+        [HttpPost]
+        public IActionResult SubscribeToggle(string? userId, int? categoryId, string? actionName) {
+            if (userId == null || categoryId == null) return Redirect("/Home/Index");
+
+            Subscribe newSub = new Subscribe();
+            newSub.UserId = userId;
+            newSub.CategoryId = categoryId;
+
+            var cat = db.Categories.FirstOrDefault(c => c.Id == categoryId);
+            var exists = db.Subscribes.FirstOrDefault(s=> s.UserId == userId && s.CategoryId == categoryId);
+
+            if (exists != null) {
+                db.Subscribes.Remove(exists);
+                TempData["CategoryFollow"] = "Unsubscribed from " + cat.Name;
+            } else {
+                db.Subscribes.Add(newSub);
+                TempData["CategoryFollow"] = "Subscribed to " + cat.Name;
+            }
+
+            db.SaveChanges();
+
+            if(actionName == "Show") {
+                return Redirect("/Categories/Show/" + categoryId);
+            }
+
+            return Redirect("/Categories/Index");
         }
     }
 }
