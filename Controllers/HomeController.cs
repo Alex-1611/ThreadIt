@@ -18,6 +18,10 @@ namespace ThreadIt.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Threads/Following/?page=1&filter=1");
+            }
             var categories = db.Categories
                 .Select(c => new
                 {

@@ -62,8 +62,70 @@ namespace ThreadIt.Controllers
             return result;
         }
 
-        public IActionResult Index()
+        public IActionResult Following()
         {
+            if(!(User.IsInRole("Admin") || User.IsInRole("User")))
+            {
+                TempData["REDIRECT"] = "/Threads/Following";
+                TempData["REDIRECTINFO"] = "You need to be logged in to see your Following page!";
+                return Redirect("Identity/Account/Login");
+            }
+			ViewBag.PaginationBaseUrl = "/Categories/Show/" + "?page";
+
+			int threadsPerPage = 6;
+            int threadsPerRow = 2; // < threadsPerPage
+
+            var rows = Math.Ceiling((float)threadsPerPage / (float)threadsPerRow);
+            ViewBag.pageRows = rows;
+            ViewBag.perRow = threadsPerRow;
+
+            var currentFilter = Convert.ToInt32(HttpContext.Request.Query["filter"]);
+            if (!(currentFilter.Equals(1) || currentFilter.Equals(2)))
+            {
+                currentFilter = 1;
+                
+            }
+            ViewBag.filter = currentFilter;
+            List<Models.Thread> threads;
+            var subs = db.AppUsers.Include(u => u.Subs).FirstOrDefault(u => u.Id == userManager.GetUserId(User));
+
+            if (subs != null)
+            {
+                var categoryIds = subs.Subs.Select(u => u.CategoryId);
+
+                if (currentFilter == 1)
+                    threads = db.Threads.Include(t => t.User).Where(t => categoryIds.Contains(t.CategoryId)).OrderBy(t => t.CreateTime).ToList();
+                else 
+					threads = db.Threads
+						.Include(t => t.User)
+						.Where(t => categoryIds.Contains(t.CategoryId))
+                        .AsEnumerable()
+						.OrderByDescending(t =>
+							db.Comments.Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays < 2).Count() * 9 +
+							db.Comments.Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays >= 2 && (DateTime.Now - c.CreateTime).TotalDays < 7).Count() * 3 +
+							db.Comments.Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays >= 7).Count()
+						)
+						.ToList();
+			}
+            else
+            {
+                TempData["CategoryDelete"] = "You don't follow any categories!";
+                return Redirect("/Categories/Index");
+            }
+            int totalThreads = threads.Count();
+
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+            var offset = 0;
+
+            if (!currentPage.Equals(0))
+            {
+                offset = (currentPage - 1) * threadsPerPage;
+            }
+
+            var paginatedThreads = threads.Skip(offset).Take(threadsPerPage);
+            ViewBag.lastPage = Math.Ceiling((float)totalThreads / (float)threadsPerPage);
+            ViewBag.threads = paginatedThreads.ToList();
+
             return View();
         }
 

@@ -59,7 +59,19 @@ namespace ThreadIt.Data
                .HasOne<AppUser>(e => e.User)
                .WithMany(e => e.Comments)
                .HasForeignKey(e => e.UserId)
-               .OnDelete(DeleteBehavior.Restrict); 
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Comment>()
+                .HasIndex(c => c.ParentId)
+                .HasDatabaseName("Index_Comment_ParentID");
+
+            modelBuilder.Entity<Comment>()
+                .HasIndex(c => c.ThreadId)
+                .HasDatabaseName("Index_Comment_ThreadId");
+
+            modelBuilder.Entity<Models.Thread>()
+                .HasIndex(t => t.CreateTime)
+                .HasDatabaseName("Index_Thread_Date");
 
         }
     }

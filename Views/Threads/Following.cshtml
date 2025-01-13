@@ -1,0 +1,96 @@
+﻿@{
+	var threads = ViewBag.threads;
+	var filter = ViewBag.filter;
+	var btn1_style = "";
+	var btn2_style = "";
+	if(filter == 1)
+	{
+        btn1_style = "background-color : cyan";
+    }
+	else if(filter == 2)
+    {
+        btn2_style = "background-color : cyan";
+    }
+}
+
+<div class="card">
+	<div class="card-body">
+		<div class="btn-group">
+			<a href="/Threads/Following/?page=1&filter=1" type="button" class="btn btn-outline-secondary" style="@btn1_style">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+					<path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
+					<path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
+				</svg>
+			</a>
+			<a href="/Threads/Following/?page=1&filter=2" type="button" class="btn btn-outline-secondary" style="@btn2_style">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fire" viewBox="0 0 16 16">
+					<path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15" />
+				</svg>
+				<span class="visually-hidden">Button</span>
+			</a>
+		</div>
+
+		@if (ViewBag.threads == null || ViewBag.threads.Count == 0)
+		{
+			<p class="text-dark">The categories you follow don't contain any threads.</p>
+		}
+		else
+		{
+			int maxThreads = threads.Count;
+			int ci = 0;
+
+			<div class="container">
+				@for (int i = 0; i < ViewBag.pageRows && ci < maxThreads; ++i)
+				{
+					<div class="row">
+						@for (int j = 0; j < ViewBag.perRow && ci < maxThreads; ++j)
+						{
+							<div class="col-sm m-4">
+								@{
+									var currentThr = threads[ci++];
+								}
+
+								@* <a asp-controller="Threads" asp-action="Show" asp-route-id="@currentThr.Id">	 *@
+								<div class="card">
+									<div class="card-body">
+										<h5 class="card-title">@currentThr.Title</h5>
+										<h6 class="card-subtitle">
+											Posted by @currentThr.User.UserName on @currentThr.CreateTime.ToString("g")
+										</h6>
+										<p class="card-text">@currentThr.Content</p>
+
+										<a class="card-link btn btn-dark" asp-controller="Threads" asp-action="Show" asp-route-id="@currentThr.Id">See thread</a>
+									</div>
+								</div>
+								@* </a> *@
+							</div>
+						}
+					</div>
+				}
+			</div>
+
+			<nav aria-label="page-navigation align-items-center">
+				<ul class="pagination">
+					<li class="page-item">
+						<a class="page-link" href="@ViewBag.PaginationBaseUrl=1&filter=@filter" aria-label="Previous">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+
+					@for (int i = 1; i <= ViewBag.lastPage; i++)
+					{
+						<li class="page-item">
+							<a class="page-link" href="@ViewBag.PaginationBaseUrl=@i&filter=@filter">@(i)</a>
+						</li>
+					}
+
+					<li class="page-item">
+						<a class="page-link" href="@ViewBag.PaginationBaseUrl=@(ViewBag.lastPage)&filter=@filter" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				</ul>
+			</nav>
+		}
+	</div>
+</div>
