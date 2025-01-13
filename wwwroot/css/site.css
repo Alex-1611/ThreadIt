@@ -157,3 +157,16 @@ html {
     font-weight: 900;
     font-style: italic;
 }
+
+#btn_comment:focus + #com_text{
+    transition-delay: 0.25s;
+    display: block !important;
+}
+
+#com_text:hover{
+    display: block !important;
+}
+
+#com_text:focus-within{
+    display: block !important;
+}

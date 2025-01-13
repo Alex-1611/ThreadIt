@@ -14,6 +14,7 @@ namespace ThreadIt.Models
 
         [Required(ErrorMessage = "Continutul articolului este obligatoriu")]
         public string Content { get; set; }
+        public bool isDeleted { get; set; }
 
         public int? CategoryId { get; set; }
         public virtual Category? Category { get; set; }

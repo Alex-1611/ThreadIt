@@ -62,6 +62,30 @@ namespace ThreadIt.Controllers
             return result;
         }
 
+        public IActionResult DeleteComment(int id)
+        {
+            var com = db.Comments.FirstOrDefault(c => c.Id == id);
+            com.IsDeleted = true;
+            db.Comments.Update(com);
+            db.SaveChanges();
+            return Redirect("/Threads/Show/" + com.ThreadId);
+        }
+
+        [HttpPost]
+        public IActionResult PostComment(Comment com)
+        {
+            com.CreateTime = DateTime.Now;
+            com.IsDeleted = false;
+            com.UserId = userManager.GetUserId(User);
+            if (ModelState.IsValid)
+            {
+                db.Comments.Add(com);
+                db.SaveChanges();
+                return Redirect("/Threads/Show/" + com.ThreadId);
+            }
+            return Redirect("/Threads/Show/" + com.ThreadId);
+        }
+
         public IActionResult Following()
         {
             if(!(User.IsInRole("Admin") || User.IsInRole("User")))
@@ -101,9 +125,9 @@ namespace ThreadIt.Controllers
 						.Where(t => categoryIds.Contains(t.CategoryId))
                         .AsEnumerable()
 						.OrderByDescending(t =>
-							db.Comments.Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays < 2).Count() * 9 +
-							db.Comments.Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays >= 2 && (DateTime.Now - c.CreateTime).TotalDays < 7).Count() * 3 +
-							db.Comments.Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays >= 7).Count()
+							db.Comments.AsEnumerable().Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays < 2).Count() * 9 +
+							db.Comments.AsEnumerable().Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays >= 2 && (DateTime.Now - c.CreateTime).TotalDays < 7).Count() * 3 +
+							db.Comments.AsEnumerable().Where(c => c.ThreadId == t.Id && (DateTime.Now - c.CreateTime).TotalDays >= 7).Count()
 						)
 						.ToList();
 			}
@@ -137,7 +161,6 @@ namespace ThreadIt.Controllers
             ViewBag.thread = thr;
             ViewBag.comments = comments;
             ViewBag.userId = userManager.GetUserId(User);
-            
             return View();
         }
 
@@ -202,6 +225,15 @@ namespace ThreadIt.Controllers
             db.SaveChanges();
 
             return Redirect("/Threads/Show/" + initialThread.Id);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var thread = db.Threads.FirstOrDefault(t=>t.Id == id);
+            thread.isDeleted = true;
+            db.Threads.Update(thread);
+            db.SaveChanges();
+            return Redirect("/Threads/Show/"+id);
         }
     }
 }
